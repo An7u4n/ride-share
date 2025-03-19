@@ -1,4 +1,4 @@
-import { User } from '@/types/User';
+import { User } from '@/types/user';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -19,5 +19,8 @@ export const userRepository = {
   },
   async findUserByEmail(email: string) {
     return prisma.user.findUnique({ where: { email } });
+  },
+  async findUserById(id: number){
+    return prisma.user.findUnique({ where: { id: id } });
   }
 };
