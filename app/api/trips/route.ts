@@ -12,3 +12,14 @@ export async function POST(req: Request){
         return NextResponse.json({message: "Trip not created. "+ex}, { status: 400 });
     }
 }
+
+export async function GET(){
+    try{
+        const trips = await tripService.getTrips();
+
+        return NextResponse.json({ trips }, { status: 200 });
+    }
+    catch(ex){
+        return NextResponse.json({ message: "Server Error" }, { status: 500 });
+    }
+}

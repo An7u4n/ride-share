@@ -14,5 +14,13 @@ export const tripRepository = {
                 driverId: trip.driverId,
             }
         });
+    },
+    async getTrips(){
+        return await prisma.trip.findMany({
+            include: {
+                driver: true,
+                car: true
+            },
+        });
     }
 }

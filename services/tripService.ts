@@ -23,5 +23,8 @@ export const tripService = {
         if(tripData.startTime < new Date()) throw new Error("Ride start cant be in the past");
 
         await tripRepository.createTrip(tripData);
+    },
+    async getTrips(){
+        return await tripRepository.getTrips();
     }
 }

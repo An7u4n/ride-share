@@ -1,3 +1,6 @@
+import { Car } from "./car";
+import { User } from "./user";
+
 export interface Trip {
     id?: number;
     driverId: number;
@@ -5,4 +8,6 @@ export interface Trip {
     destination: string;
     startTime: Date;
     carId: number;
+    car?: Car;
+    driver?: User
 }
