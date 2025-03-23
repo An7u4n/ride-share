@@ -22,5 +22,15 @@ export const userRepository = {
   },
   async findUserById(id: number){
     return prisma.user.findUnique({ where: { id: id } });
+  },
+  async updateUserAsync(user: User) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: user.password,
+        phone: user.phone,
+        profilePicture: user.profilePicture,
+      },
+    });
   }
 };
