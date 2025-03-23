@@ -30,6 +30,7 @@ model Car {
   year    Int
   ownerId Int @unique
   userOwner  User @relation(fields: [ownerId], references: [id])
+  trips   Trip[] @relation("CarTrips")
 }
 
 model Trip {
@@ -41,6 +42,7 @@ model Trip {
   driverId    Int
   driver      User   @relation("DriverTrips", fields: [driverId], references: [id])
   users       User[]   @relation("UserTrips")
+  car         Car   @relation("CarTrips", fields: [carId], references: [id])
 }
 
 enum Gender {
