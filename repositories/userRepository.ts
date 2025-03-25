@@ -1,5 +1,5 @@
 import { User } from '@/types/user';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Gender } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export const userRepository = {
           email: user.email, 
           password: user.password, 
           phone: user.phone, 
-          gender: user.gender, 
+          gender: user.gender as Gender, 
           profilePicture: (user.profilePicture ? user.profilePicture : '')
         },
       });
@@ -22,6 +22,9 @@ export const userRepository = {
   },
   async findUserById(id: number){
     return prisma.user.findUnique({ where: { id: id } });
+  },
+  async findUserWithDetailsById(id: number){
+    return prisma.user.findUnique({ where: { id: id }, include: { car: true, trips: true, driverTrips: true} });
   },
   async updateUserAsync(user: User) {
     await prisma.user.update({

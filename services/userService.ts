@@ -24,5 +24,11 @@ export const userService = {
         await userRepository.updateUserAsync(user);
 
         return savedImage;
+    },
+    async getUserAsync(userId: number){
+        const user = await userRepository.findUserWithDetailsById(userId);
+        if(!user) throw new Error("User not exists");
+
+        return user;
     }
 }

@@ -1,3 +1,6 @@
+import { Car } from "./car";
+import { Trip } from "./trip";
+
 export type User = {
     id: number | undefined;
     name: string;
@@ -8,4 +11,7 @@ export type User = {
     gender: string;
     profilePicture: string | undefined;
     createdAt: string | undefined;
+    car?: Car[],
+    trips?: Trip[],
+    driverTrips?: Trip[]
 };
