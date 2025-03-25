@@ -15,8 +15,10 @@ export const tripRepository = {
             }
         });
     },
-    async getTrips(){
+    async getTrips(limit: number, skip: number){
         return await prisma.trip.findMany({
+            skip,
+            take: limit,
             include: {
                 driver: true,
                 car: true

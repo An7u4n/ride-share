@@ -24,7 +24,7 @@ export const tripService = {
 
         await tripRepository.createTrip(tripData);
     },
-    async getTrips(){
-        return await tripRepository.getTrips();
+    async getTrips(limit: number, skip: number){
+        return await tripRepository.getTrips(limit, skip);
     }
 }
