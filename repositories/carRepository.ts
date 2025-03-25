@@ -18,5 +18,12 @@ export const carRepository = {
     async findCarByPlate(plate: string) {
         const car = await prisma.car.findFirst({ where: { plate: plate } });
         return car;
+    },
+    async getCarsById(id: number){
+        return await prisma.car.findMany({
+            where: {
+                ownerId: id
+            }
+        });
     }
 }

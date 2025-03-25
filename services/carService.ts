@@ -22,5 +22,8 @@ export const carService = {
         }
 
         await carRepository.createCar(car);
+    },
+    async getCarsById(id: number){ 
+        return await carRepository.getCarsById(id);
     }
 };
