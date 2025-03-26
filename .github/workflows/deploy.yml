@@ -1,0 +1,42 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Autenticarse en Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+
+      - name: Autenticar Docker con Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Construir y enviar imagen a Artifact Registry
+        run: |
+          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mi-repo/mi-app .
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mi-repo/mi-app
+
+      - name: Desplegar en Cloud Run
+        run: |
+          gcloud run deploy mi-app \
+            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mi-repo/mi-app \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --service-account github-actions@${{ secrets.GCP_PROJECT }}.iam.gserviceaccount.com \
+            --set-env-vars "NODE_ENV=production" \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }}"
