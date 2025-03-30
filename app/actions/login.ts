@@ -18,6 +18,6 @@ export async function loginAction(email: string, password: string) {
         expiresIn: '1d'
     });
 
-    (await cookies()).set('token', token, { httpOnly: true, secure: true });
+    (await cookies()).set('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
     redirect('/');
 }
