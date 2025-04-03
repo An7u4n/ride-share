@@ -1,4 +1,3 @@
-
 "use client";
 
 import RideCard from "@/app/components/RideCard";
@@ -6,6 +5,7 @@ import { getUserFromToken } from "@/lib/auth";
 import { Car } from "@/types/car";
 import { Trip } from "@/types/trip";
 import { User } from "@/types/user";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function ProfileContent() {
@@ -14,6 +14,8 @@ export default function ProfileContent() {
     const [cars, setCars] = useState<Car[]>([]);
     const [loading, setLoading] = useState(true);
     const [showPlate, setShowPlate] = useState(false);
+    const [file, setFile] = useState<Blob | null>(null);
+    const [updateImage, setUpdateImage] = useState(false);
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
@@ -41,6 +43,37 @@ export default function ProfileContent() {
         .catch(err => console.error(err));
     }, []);
 
+    function handleFileChange(event: any) {
+        setFile(event.target.files[0]);
+    };
+    
+    function handleUpload() {
+        if (!file) {
+          alert("Select an image first.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        fetch(`${API_URL}/users/${user?.id}/image`, {
+            method: "POST",
+            body: formData,
+        }).then(response => {
+
+            if (response.ok) {
+                alert("Image uploaded");
+            } else {
+                alert("Error trying to upload image");
+            }
+        
+        })
+        .catch (error => {
+            console.error("Error:", error);
+            alert("Error uploading image.");
+        });
+    }
+    
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -80,18 +113,22 @@ export default function ProfileContent() {
                                 <p className="text-gray-600"><span className="font-semibold">Gender:</span> {user?.gender}</p>
                             </div>
                         </div>
-                        <div className="mt-4">
-                            <button className="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
-                                Edit Profile
-                            </button>
-                        </div>
+                        <p className="text-gray-700 text-xl font-bold mt-2 mb-0 text-center cursor-pointer" onClick={() => setUpdateImage(!updateImage)}>Update Image</p>
+                        { updateImage && <div className="flex flex-col">
+                            <input className="text-black" type="file" onChange={handleFileChange} accept="image/*" />
+                            <button className="bg-blue-400 rounded text-white" onClick={handleUpload}>Upload Image</button>
+                        </div> }
                     </div>
                 </div>
             </div>
             
             {/* Cars Section */}
-            <h2 className="text-2xl font-bold text-blue-400 mb-4">My Cars</h2>
+            <h2 className="text-2xl font-bold text-blue-400">My Cars</h2>
+            <Link href="/add-car" className="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
+                Add a Car
+            </Link>
             {cars.length > 0 ? (
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {cars.map((car, index) => (
                         <div key={index} className="bg-white rounded-lg shadow-lg p-4">
@@ -112,9 +149,6 @@ export default function ProfileContent() {
             ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-8 text-center">
                     <p className="text-gray-600">No cars registered yet.</p>
-                    <button className="mt-4 bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
-                        Add a Car
-                    </button>
                 </div>
             )}
             
