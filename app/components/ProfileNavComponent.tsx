@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { logout } from '../actions/logout';
+import Link from 'next/link';
 
 interface ProfileNavComponentProps {
     name: string;
@@ -36,9 +37,11 @@ export default function ProfileNavComponent({ name, image }: ProfileNavComponent
             </div>
             {open && (
                 <div className="absolute right-0 mt-2 bg-white border rounded shadow-lg">
-                    <ul className="py-1 text-blue-300 font-bold">
+                    <ul className="py-1 text-blue-400 font-bold text-xl">
                         <li className="px-4 py-2 hover:bg-blue-200 cursor-pointer">
-                            Settings
+                            <Link href="/profile">
+                                Profile
+                            </Link>
                         </li>
                         <li className="px-4 py-2 hover:bg-blue-200 cursor-pointer" onClick={logout}>
                             Logout
