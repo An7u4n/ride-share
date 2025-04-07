@@ -83,7 +83,9 @@ export default function ProfileContent() {
     }
 
     return (
-        <div className="py-8 px-4 bg-gray-100 flex flex-col gap-8 items-center">
+        <div className="py-8 px-4 bg-blue-400 flex flex-col gap-8 items-center">
+            <div className="bg-gray-100 flex flex-col gap-8 items-center py-8 px-4 rounded-lg shadow-lg w-full max-w-2xl">
+
             <h1 className="text-4xl font-bold text-blue-400 mb-8">My Profile</h1>
     
             <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -168,6 +170,7 @@ export default function ProfileContent() {
                     </button>
                 </div>
             )}
+            </div>
         </div>
     );
 }
