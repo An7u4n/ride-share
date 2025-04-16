@@ -9,5 +9,6 @@ export interface Trip {
     startTime: Date;
     carId: number;
     car?: Car;
-    driver?: User
+    driver?: User,
+    users?: User[] 
 }
