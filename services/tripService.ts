@@ -2,6 +2,7 @@ import { Car } from "@/types/car";
 import { PrismaClient } from "@prisma/client"
 import { Trip } from "@/types/trip";
 import { tripRepository } from "@/repositories/tripRepository";
+import { userService } from "./userService";
 
 const prisma = new PrismaClient();
 
@@ -26,5 +27,14 @@ export const tripService = {
     },
     async getTrips(limit: number, skip: number){
         return await tripRepository.getTrips(limit, skip);
+    },
+    async joinTrip(userId: number, tripId: number) {
+        const trip = await tripRepository.getTripById(tripId);
+        if(!trip) throw new Error("Trip doesnt found");
+        const user = await userService.getUserAsync(userId);
+        if(!user) throw new Error("User doesnt exist");
+        if(trip.users.some(u => u.id == userId)) throw new Error("User already registered at the trip");
+
+        await tripRepository.updatePassengers([...trip.users, user], tripId);
     }
 }

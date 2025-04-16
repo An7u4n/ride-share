@@ -1,5 +1,5 @@
 import { Trip } from "@/types/trip";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -24,5 +24,29 @@ export const tripRepository = {
                 car: true
             },
         });
+    },
+    async getTripById(tripId: number){
+        return await prisma.trip.findFirst({
+            where: {
+                id: tripId
+            },
+            include: {
+                users: true
+            },
+        });
+    },
+    async updatePassengers(passengers: User[], tripId: number){
+        const trip = await this.getTripById(tripId);
+        console.log(passengers);
+        await prisma.trip.update({
+            where: {
+                id: tripId
+            },
+            data: {
+                users: {
+                    connect: passengers.map(user => ({ id: user.id }))
+                }
+            }
+        })
     }
 }
