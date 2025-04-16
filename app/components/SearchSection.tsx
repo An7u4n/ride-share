@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import SearchBarComponent from "./SearchBarComponent";
 import RideCard from "./RideCard";
 import { Trip } from "@/types/trip";
+import { getUserFromToken } from "@/lib/auth";
+import { User } from "@/types/user";
 
 export default function SearchSection(){
 
     const [searchData, setSearchData] = useState();
     const [trips, setTrips] = useState<Trip[]>([]);
+    const [userId, setUserId] = useState<number | null>(null);
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     const handleSearch = (data: any) => {
@@ -15,6 +18,11 @@ export default function SearchSection(){
     };
 
     useEffect(() => {
+        getUserFromToken()
+        .then(userLogged => {
+            if(userLogged)
+                setUserId(userLogged.id);
+        }).then(() => {
         fetch(`${API_URL}/trips`)
             .then(res => {
                 if (!res.ok) {
@@ -27,7 +35,7 @@ export default function SearchSection(){
                 setTrips(data.trips)
             })
             .catch(err => console.error(err));
-    }, []);
+        })}, []);
 
 
     return (
@@ -37,7 +45,9 @@ export default function SearchSection(){
             <h3 className="self-start mt-4 text-2xl font-bold text-blue-400">Last Trips:</h3>
             <div className="flex flex-col gap-8">
                 {trips.map((trip, index) => (
-                    <RideCard trip={trip} key={index} />
+                    (trip.driverId !== userId) && (
+                        <RideCard trip={trip} key={index} />
+                    )
                 ))}
             </div>
         </div>
