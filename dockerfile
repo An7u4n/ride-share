@@ -6,4 +6,4 @@ COPY package.json package-lock.json ./
 RUN npm i
 COPY . .
 RUN npx prisma generate
-CMD ["/bin/bash", "-c", "/cloud-sql-proxy ride-share-454921:us-central1:ride-share-mysql & npm run dev"]
+CMD ["/bin/sh", "-c", "/cloud-sql-proxy ride-share-454921:us-central1:ride-share-mysql & npm run dev"]
