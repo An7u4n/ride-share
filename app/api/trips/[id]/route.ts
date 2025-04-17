@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } = await params;
+export const GET = async (request: NextRequest) => {
+    const url = new URL(request.url);
+    const id = parseInt(url.pathname.split("/")[3]);
 
     const trip = await prisma.trip.findFirst(
         {
             where: {
-                id: parseInt(id)
+                id: id
             },
             include: {
                 car: true,
