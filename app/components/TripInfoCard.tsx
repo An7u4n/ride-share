@@ -1,9 +1,10 @@
-import { Trip } from "@/types/trip";
-import { MapPin, Clock, User } from "lucide-react";
-import Link from "next/link";
+import { Trip } from '@/types/trip'
+import { Clock, MapPin } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
 
-export default function RideCard({ trip }: { trip: Trip }) {
-  trip.startTime = new Date(trip.startTime);
+export default function TripInfoCard({ trip }: { trip: Trip }) {
+    const startTime = new Date(trip.startTime);
   return (
     <div className="w-full max-w-2xl bg-white text-blue-400 shadow-xl rounded-2xl p-6 flex gap-6 items-center">
       <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-400 text-white font-bold flex items-center justify-center text-xl">
@@ -19,13 +20,13 @@ export default function RideCard({ trip }: { trip: Trip }) {
           </div>  
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5" />
-            <span>{`Trip starts ${trip.startTime.getDate().toString().padStart(2, '0')}-${trip.startTime.getMonth().toString().padStart(2, '0')}-${trip.startTime.getFullYear()} ${trip.startTime.getHours().toString().padStart(2, '0')}:${trip.startTime.getMinutes().toString().padStart(2, '0')}`}</span>
+            <span>{`Trip starts ${startTime.getDate().toString().padStart(2, '0')}-${startTime.getMonth().toString().padStart(2, '0')}-${startTime.getFullYear()} ${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`}</span>
           </div>
         </div>
       </div>
-      <Link href={`trips/${trip.id}`} className="bg-blue-400 text-white font-bold rounded-xl px-4 py-2 cursor-pointer">
-        Get on Board!
+      <Link href={`trips/${trip.id}`} className="bg-gray-700 text-white font-bold rounded-xl px-4 py-2 cursor-pointer">
+        Details
       </Link>
     </div>
-  );
+  )
 }

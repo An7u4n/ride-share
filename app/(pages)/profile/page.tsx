@@ -1,6 +1,7 @@
 "use client";
 
 import RideCard from "@/app/components/RideCard";
+import TripInfoCard from "@/app/components/TripInfoCard";
 import { getUserFromToken } from "@/lib/auth";
 import { Car } from "@/types/car";
 import { Trip } from "@/types/trip";
@@ -10,7 +11,8 @@ import { useEffect, useState } from "react";
 
 export default function ProfileContent() {
     const [user, setUser] = useState<User | null>(null);
-    const [trips, setTrips] = useState<Trip[]>([]);
+    const [driverTrips, setDriverTrips] = useState<Trip[]>([]);
+    const [passengerTrips, setPassengerTrips] = useState<Trip[]>([]);
     const [cars, setCars] = useState<Car[]>([]);
     const [loading, setLoading] = useState(true);
     const [showPlate, setShowPlate] = useState(false);
@@ -34,9 +36,20 @@ export default function ProfileContent() {
             })
             .then(data => {
                 setUser(data);
-                setTrips(data.driverTrips);
                 setCars(data.car);
                 setLoading(false);
+                fetch(`${API_URL}/users/${userId}/trips`)
+                .then( res => {
+                    if (!res.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setDriverTrips(data.driverTrips);
+                    setPassengerTrips(data.passengerTrips);
+                })
+                .catch(err => console.error(err));
             })
             .catch(err => console.error(err));            
         })
@@ -130,23 +143,24 @@ export default function ProfileContent() {
                 Add a Car
             </Link>
             {cars.length > 0 ? (
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {cars.map((car, index) => (
-                        <div key={index} className="bg-white rounded-lg shadow-lg p-4">
-                            <h3 className="font-bold text-lg text-blue-400">{car.brand} {car.model}</h3>
-                            <p className="text-gray-600">Year: {car.year}</p>
-                            <p className="text-gray-600">
-                                License plate: {showPlate ? car.plate : "• • • • • •"}
-                            </p>
-                            <button 
-                                onClick={() => setShowPlate(prev => !prev)}
-                                className="mt-2 text-sm px-2 py-1 bg-blue-400 hover:bg-blue-500 rounded transition cursor-pointer"
-                            >
-                                {showPlate ? "Hide plate" : "Show plate"}
-                            </button>
-                        </div>
-                    ))}
+                <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        {cars.map((car, index) => (
+                            <div key={index} className="bg-white rounded-lg shadow-lg p-4">
+                                <h3 className="font-bold text-lg text-blue-400">{car.brand} {car.model}</h3>
+                                <p className="text-gray-600">Year: {car.year}</p>
+                                <p className="text-gray-600">
+                                    License plate: {showPlate ? car.plate : "• • • • • •"}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                    <button 
+                        onClick={() => setShowPlate(prev => !prev)}
+                        className="mt-2 text-sm px-2 py-1 bg-blue-400 hover:bg-blue-500 rounded transition cursor-pointer"
+                    >
+                        {showPlate ? "Hide plate" : "Show plate"}
+                    </button>
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-8 text-center">
@@ -156,18 +170,31 @@ export default function ProfileContent() {
             
             {/* Trips Section */}
             <h2 className="text-2xl font-bold text-blue-400 mb-4">My Trips</h2>
-            {trips.length > 0 ? (
+            {driverTrips.length > 0 ? (
                 <div className="flex flex-col gap-8">
-                    {trips.map((trip, index) => (
-                        <RideCard trip={trip} key={index} />
+                    <p className="text-xl font-semibold text-blue-400">As Driver</p>
+                    {driverTrips.map((trip, index) => (
+                        <TripInfoCard trip={trip} key={index} />
                     ))}
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <p className="text-gray-600">No trips found.</p>
+                    <p className="text-gray-600">No trips as driver found.</p>
                     <button className="mt-4 bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
                         Create a Trip
                     </button>
+                </div>
+            )}
+            {passengerTrips.length > 0 ? (
+                <div className="flex flex-col gap-8">
+                    <p className="text-xl font-semibold text-blue-400">As Passenger</p>
+                    {passengerTrips.map((trip, index) => (
+                        <TripInfoCard trip={trip} key={index} />
+                    ))}
+                </div>
+            ) : (
+                <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <p className="text-gray-600">No trips as passenger found.</p>
                 </div>
             )}
             </div>

@@ -7,10 +7,11 @@ import { useEffect, useState } from 'react';
 
 export default function TripInfo() {
   const { id } = useParams();
-  const [trip, setTrip] = useState<Trip | null>(null);
+  const [trip, setTrip] = useState<Trip>();
   const [loading, setLoading] = useState(true);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [user, setUser] = useState<User | null>(null);
+  const [userJoined, setUserJoined] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/trips/${id}`)
@@ -18,18 +19,26 @@ export default function TripInfo() {
     .then(data => {
       setTrip(data);
       setLoading(false);
-    })
+      getUserFromToken()
+        .then(user => {
+          if (!user) {
+            console.error("User not logged in");
+            return;
+          }
+          setUser(user);
+        })
+      })
     .catch(err => console.error(err));
-
-    getUserFromToken()
-      .then(user => {
-        if (!user) {
-          console.error("User not logged in");
-          return;
-        }
-        setUser(user);
-      });
   }, []);
+
+  useEffect(() => {
+    if (trip && user) {
+      console.log("userId:", user.id, "driverId:", trip.driverId, "users:", trip.users);
+      if (trip.driverId === user.id || trip.users?.some(x => x.id === user.id)) {
+        setUserJoined(true);
+      }
+    }
+  }, [trip, user]);
 
   if (loading) {
     return (
@@ -46,6 +55,13 @@ export default function TripInfo() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ userId: user?.id }),
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      alert("Joined trip successfully!");
+      setUserJoined(true);
     })
   }
 
@@ -68,9 +84,9 @@ export default function TripInfo() {
               )}
             </div>
             <div className="mt-6">
-              <button onClick={onJoinTrip} className="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-xl shadow-md">
+              {!userJoined ? <button onClick={onJoinTrip} className="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-xl shadow-md">
                 Join!
-              </button>
+              </button> : <p className="bg-gray-400 hover:bg-blue-400 text-white px-4 py-2 rounded-xl shadow-md w-fit">Already in</p>}
             </div>
           </div>
           <div className='flex items-center justify-center p-6 flex-col text-gray-700'>
@@ -82,7 +98,7 @@ export default function TripInfo() {
                   className="rounded-full object-cover h-30 w-30"
               />
               ) : (
-              <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center">
+              <div className="rounded-full bg-blue-100 flex items-center justify-center h-30 w-30">
                 <span className="text-5xl text-blue-400">{trip.driver?.name?.charAt(0)}</span>
               </div>
             )}
@@ -106,7 +122,7 @@ export default function TripInfo() {
                       className="rounded-full object-cover h-10 w-10"
                     />
                   ) : (
-                    <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                       <span className="text-2xl text-blue-400">{user.name?.charAt(0)}</span>
                     </div>
                   )}
