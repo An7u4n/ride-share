@@ -1,6 +1,7 @@
 import { userRepository } from "@/repositories/userRepository"
 import { gcpService } from "./gcpService";
 import { User } from "@/types/user";
+import { tripRepository } from "@/repositories/tripRepository";
 
 export const userService = {
     async uploadProfileImageAsync(userId: number, file: File){
@@ -30,5 +31,13 @@ export const userService = {
         if(!user) throw new Error("User not exists");
 
         return user;
+    },
+    async getUserTrips(userId: number){
+        const trips = await tripRepository.getTrips();
+
+        const asDriverTrips = trips.filter(x => x.driverId == userId);
+        const asPassengerTrips = trips.filter(x => x.users.find(u => u.id == userId));
+
+        return { driverTrips: asDriverTrips, passengerTrips: asPassengerTrips}
     }
 }
