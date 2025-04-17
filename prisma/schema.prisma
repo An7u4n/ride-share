@@ -28,7 +28,7 @@ model Car {
   brand   String
   model   String
   year    Int
-  ownerId Int @unique
+  ownerId Int
   userOwner  User @relation(fields: [ownerId], references: [id])
   trips   Trip[] @relation("CarTrips")
 }
