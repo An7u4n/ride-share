@@ -17,14 +17,19 @@ export async function GET(req: NextRequest){
     try{
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get("page") || "1", 10);
-        const limit = parseInt(searchParams.get("limit") || "10", 10);
+        const limit = parseInt(searchParams.get("limit") || "5", 10);
+        const origin = searchParams.get("origin") ?? undefined;
+        const destination = searchParams.get("destination") ?? undefined;
+        const startTime = searchParams.get("startTime") ?? undefined;
+        const passengers = parseInt(searchParams.get("passengers") || "1", 10);
         const skip = (page - 1) * limit;
-        const trips = await tripService.getTrips(limit, skip);
+        const trips = await tripService.getTrips(limit, skip, origin, destination, startTime, passengers);
 
         return NextResponse.json({
-            trips: trips,
+            trips: trips.trips,
             page,
-            limit
+            limit,
+            totalTrips: trips.totalTrips
         }, { status: 200 });
     }
     catch(ex){
