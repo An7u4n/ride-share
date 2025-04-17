@@ -25,8 +25,10 @@ export const tripService = {
 
         await tripRepository.createTrip(tripData);
     },
-    async getTrips(limit: number, skip: number){
-        return await tripRepository.getTrips(limit, skip);
+    async getTrips(limit: number, skip: number, origin?: string, destination?: string, startTime?: string, passengers?: number){
+        const totalTrips = await tripRepository.getTotalTrips();
+        const trips = await tripRepository.getTripsWithParams(limit, skip, origin, destination, startTime, passengers);
+        return {trips, totalTrips};
     },
     async joinTrip(userId: number, tripId: number) {
         const trip = await tripRepository.getTripById(tripId);
