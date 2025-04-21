@@ -1,4 +1,5 @@
 "use client";
+import Chat from '@/app/components/Chat';
 import { getUserFromToken } from '@/lib/auth';
 import { Trip } from '@/types/trip';
 import { User } from '@prisma/client';
@@ -12,6 +13,7 @@ export default function TripInfo() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [user, setUser] = useState<User | null>(null);
   const [userJoined, setUserJoined] = useState(false);
+  const tripId = parseInt(id as string);
 
   useEffect(() => {
     fetch(`${API_URL}/trips/${id}`)
@@ -108,6 +110,7 @@ export default function TripInfo() {
             <p>
               <span className='font-semibold text-blue-400'>Car:</span> {trip.car?.brand} {trip.car?.model} {trip.car?.year}
             </p>
+            <Chat tripId={tripId} />
           </div>
           <div>
             {trip.users && 
